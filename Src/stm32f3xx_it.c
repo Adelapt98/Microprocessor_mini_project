@@ -38,7 +38,7 @@
 /* USER CODE BEGIN 0 */
 #include "LiquidCrystal.h"
 extern int flag;
-int 
+
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/

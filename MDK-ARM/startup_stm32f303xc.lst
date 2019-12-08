@@ -641,12 +641,11 @@ ARM Macro Assembler    Page 10
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=riz_mini_project\startup_stm32f303xc.d -oriz_mini_project\start
-up_stm32f303xc.o -I.\RTE\_riz_mini_project -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.
-0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F3xx_DFP\2.1.0\Drivers\CMSIS\De
-vice\ST\STM32F3xx\Include --predefine="__EVAL SETA 1" --predefine="__MICROLIB S
-ETA 1" --predefine="__UVISION_VERSION SETA 525" --predefine="_RTE_ SETA 1" --pr
-edefine="STM32F303xC SETA 1" --list=startup_stm32f303xc.lst startup_stm32f303xc
-.s
+up_stm32f303xc.o -I.\RTE\_riz_mini_project -ID:\ARMKeil\ARM\PACK\ARM\CMSIS\5.3.
+0\CMSIS\Include -ID:\ARMKeil\ARM\PACK\Keil\STM32F3xx_DFP\2.1.0\Drivers\CMSIS\De
+vice\ST\STM32F3xx\Include --predefine="__MICROLIB SETA 1" --predefine="__UVISIO
+N_VERSION SETA 525" --predefine="_RTE_ SETA 1" --predefine="STM32F303xC SETA 1"
+ --list=startup_stm32f303xc.lst startup_stm32f303xc.s
 
 
 
@@ -1578,4 +1577,4 @@ Symbol: __main
       At line 189 in file startup_stm32f303xc.s
 Comment: __main used once
 2 symbols
-431 symbols in table
+430 symbols in table
