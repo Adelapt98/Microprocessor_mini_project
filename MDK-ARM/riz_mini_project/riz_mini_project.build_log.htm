@@ -22,16 +22,19 @@ Dialog DLL:      TCM.DLL V1.35.1.0
  
 <h2>Project:</h2>
 E:\Projects\Micro\mini_Project\riz_mini_project\MDK-ARM\riz_mini_project.uvprojx
-Project File Date:  12/08/2019
+Project File Date:  12/13/2019
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\ARMKeil\ARM\ARMCC\Bin'
 Build target 'riz_mini_project'
-compiling stm32f3xx_it.c...
+compiling main.c...
+../Src/main.c(91): warning:  #177-D: variable "sent"  was declared but never referenced
+  	unsigned char sent[5] = "safe\n";
+../Src/main.c: 1 warning, 0 errors
 linking...
-Program Size: Code=10596 RO-data=472 RW-data=44 ZI-data=2324  
+Program Size: Code=13292 RO-data=480 RW-data=152 ZI-data=2432  
 FromELF: creating hex file...
-"riz_mini_project\riz_mini_project.axf" - 0 Error(s), 0 Warning(s).
+"riz_mini_project\riz_mini_project.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -54,7 +57,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.1.1
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

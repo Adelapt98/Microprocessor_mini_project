@@ -33,5 +33,8 @@ riz_mini_project\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_h
 riz_mini_project\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_pwr_ex.h
 riz_mini_project\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_spi.h
 riz_mini_project\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_spi_ex.h
+riz_mini_project\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart.h
+riz_mini_project\stm32f3xx_it.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_uart_ex.h
 riz_mini_project\stm32f3xx_it.o: ../Inc/stm32f3xx_it.h
+riz_mini_project\stm32f3xx_it.o: D:\ARMKeil\ARM\ARMCC\Bin\..\include\string.h
 riz_mini_project\stm32f3xx_it.o: ../Inc/LiquidCrystal.h

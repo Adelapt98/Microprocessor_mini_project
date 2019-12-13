@@ -35,15 +35,19 @@
 #include "stm32f3xx.h"
 #include "stm32f3xx_it.h"
 
+#include <string.h>
 /* USER CODE BEGIN 0 */
 #include "LiquidCrystal.h"
 extern int flag;
+extern int select;
+extern int isOnFire;
 
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
+extern UART_HandleTypeDef huart2;
 
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
@@ -209,8 +213,10 @@ void EXTI0_IRQHandler(void)
 	clear();
 	if(!flag){
 		setCursor(0, 1);
+		write(4);
+		setCursor(1, 1);	
 		print("1.MODE");
-		setCursor(0, 2);
+		setCursor(1, 2);
 		print("2.ON/OFF/AUTO");
 	}
 	flag = !flag;
@@ -232,7 +238,13 @@ void ADC1_2_IRQHandler(void)
 	if(!flag){
 	
 		
-	uint32_t a = HAL_ADC_GetValue(&hadc1);
+	uint32_t a = 2/*HAL_ADC_GetValue(&hadc1)*/;
+	setCursor(17, 1);
+	write(0);
+	setCursor(16, 1);
+	write(1);
+	setCursor(15, 1);
+	print(":");
 	setCursor(13, 1);
 	print("C");
 	setCursor(10, 1);
@@ -241,6 +253,12 @@ void ADC1_2_IRQHandler(void)
 	print(data);
 	
 	uint32_t a2 = HAL_ADC_GetValue(&hadc2);
+	setCursor(17, 2);
+	write(2);
+	setCursor(16, 2);
+	write(3);
+	setCursor(15, 2);
+	print(":");
 	setCursor(13, 2);
 	print("%");
 	setCursor(10, 2);
@@ -252,6 +270,43 @@ void ADC1_2_IRQHandler(void)
 	HAL_ADC_Start_IT(&hadc1);
 	HAL_ADC_Start_IT(&hadc2);
   /* USER CODE END ADC1_2_IRQn 1 */
+}
+
+/**
+* @brief This function handles USART2 global interrupt / USART2 wake-up interrupt through EXTI line 26.
+*/
+void USART2_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART2_IRQn 0 */
+
+  /* USER CODE END USART2_IRQn 0 */
+  HAL_UART_IRQHandler(&huart2);
+  /* USER CODE BEGIN USART2_IRQn 1 */
+	extern unsigned char safe[1];
+	
+  /* USER CODE END USART2_IRQn 1 */
+}
+
+/**
+* @brief This function handles EXTI line[15:10] interrupts.
+*/
+void EXTI15_10_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI15_10_IRQn 0 */
+
+  /* USER CODE END EXTI15_10_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_14);
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_15);
+  /* USER CODE BEGIN EXTI15_10_IRQn 1 */
+	HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_8);
+	//setCursor(15, 2);
+	unsigned char hello[8] = "Hello \n";
+	HAL_UART_Transmit(&huart2, hello, sizeof(unsigned char) * 8, 1000);
+		//write(1);
+	
+		//print("U");
+	
+  /* USER CODE END EXTI15_10_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
