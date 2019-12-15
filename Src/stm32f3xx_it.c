@@ -35,23 +35,103 @@
 #include "stm32f3xx.h"
 #include "stm32f3xx_it.h"
 
-#include <string.h>
 /* USER CODE BEGIN 0 */
 #include "LiquidCrystal.h"
 extern int flag;
 extern int select;
 extern int isOnFire;
-
+int InitTemp;
+int isTempRecorded = 0;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
+extern TIM_HandleTypeDef htim2;
 extern UART_HandleTypeDef huart2;
 
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
+
+void enableSeg(int i){
+	switch (i){
+		case 0:
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, 0);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, 1);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, 1);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
+			break;
+		case 1:
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, 1);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, 0);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, 1);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
+			break;
+		case 2: 
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, 1);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, 1);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, 0);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
+			break;
+		case 3:
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, 1);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, 1);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, 1);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
+			break;
+	}
+}
+
+void printOn7Seg(char c){
+	switch (c){
+		case 'S':
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, 1);
+			break;
+		case 'A':
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, 0);
+			break;
+		case 'F':
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, 1);
+			break;
+		case 'E':
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, 1);
+			break;
+		case 'I':
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, 0);
+			break;
+	}
+}
 
 /**
 * @brief This function handles Non maskable interrupt.
@@ -218,6 +298,7 @@ void EXTI0_IRQHandler(void)
 		print("1.MODE");
 		setCursor(1, 2);
 		print("2.ON/OFF/AUTO");
+		//printOn7Seg('S');
 	}
 	flag = !flag;
   /* USER CODE END EXTI0_IRQn 1 */
@@ -251,6 +332,17 @@ void ADC1_2_IRQHandler(void)
 	char data[5];
 	sprintf(data, "%d ", a);
 	print(data);
+	if(!isTempRecorded){
+		InitTemp = a;
+		isTempRecorded = 1;
+	}else{
+		if(a > InitTemp){
+			isOnFire = 1;
+		}else{
+			isOnFire = 0;
+		}
+	}
+		
 	
 	uint32_t a2 = HAL_ADC_GetValue(&hadc2);
 	setCursor(17, 2);
@@ -270,6 +362,47 @@ void ADC1_2_IRQHandler(void)
 	HAL_ADC_Start_IT(&hadc1);
 	HAL_ADC_Start_IT(&hadc2);
   /* USER CODE END ADC1_2_IRQn 1 */
+}
+
+/**
+* @brief This function handles TIM2 global interrupt.
+*/
+void TIM2_IRQHandler(void)
+{
+	HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_12);
+  /* USER CODE BEGIN TIM2_IRQn 0 */
+	
+  /* USER CODE END TIM2_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim2);
+  /* USER CODE BEGIN TIM2_IRQn 1 */
+	if(!isOnFire){
+		enableSeg(0);
+		printOn7Seg('S');
+		HAL_Delay(10);
+		enableSeg(1);
+		printOn7Seg('A');
+		HAL_Delay(10);
+		enableSeg(2);
+		printOn7Seg('F');
+		HAL_Delay(10);
+		enableSeg(3);
+		printOn7Seg('E');
+		HAL_Delay(10);
+	}else{
+		enableSeg(0);
+		printOn7Seg('F');
+		HAL_Delay(10);
+		enableSeg(1);
+		printOn7Seg('I');
+		HAL_Delay(10);
+		enableSeg(2);
+		printOn7Seg('R');
+		HAL_Delay(10);
+		enableSeg(3);
+		printOn7Seg('E');
+		HAL_Delay(10);
+	}
+  /* USER CODE END TIM2_IRQn 1 */
 }
 
 /**
@@ -293,18 +426,22 @@ void USART2_IRQHandler(void)
 void EXTI15_10_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
-
+	
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_14);
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_15);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
 	HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_8);
-	//setCursor(15, 2);
-	unsigned char hello[8] = "Hello \n";
-	HAL_UART_Transmit(&huart2, hello, sizeof(unsigned char) * 8, 1000);
-		//write(1);
+	if(flag){
+		unsigned char hello[8] = "Hello \n";
+		HAL_UART_Transmit(&huart2, hello, sizeof(unsigned char) * 8, 1000);
+		setCursor(0, 1);
+		print(" ");
+		setCursor(0, 2);
+		write(4);
+	}
 	
-		//print("U");
+	
 	
   /* USER CODE END EXTI15_10_IRQn 1 */
 }
