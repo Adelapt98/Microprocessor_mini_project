@@ -369,38 +369,39 @@ void ADC1_2_IRQHandler(void)
 */
 void TIM2_IRQHandler(void)
 {
-	HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_12);
   /* USER CODE BEGIN TIM2_IRQn 0 */
-	
+
   /* USER CODE END TIM2_IRQn 0 */
   HAL_TIM_IRQHandler(&htim2);
   /* USER CODE BEGIN TIM2_IRQn 1 */
+	HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_12);
 	if(!isOnFire){
 		enableSeg(0);
 		printOn7Seg('S');
-		HAL_Delay(10);
+
+		HAL_Delay(20);
 		enableSeg(1);
 		printOn7Seg('A');
-		HAL_Delay(10);
+		HAL_Delay(20);
 		enableSeg(2);
 		printOn7Seg('F');
-		HAL_Delay(10);
+		HAL_Delay(20);
 		enableSeg(3);
 		printOn7Seg('E');
-		HAL_Delay(10);
+		HAL_Delay(20);
 	}else{
 		enableSeg(0);
 		printOn7Seg('F');
-		HAL_Delay(10);
+		HAL_Delay(20);
 		enableSeg(1);
 		printOn7Seg('I');
-		HAL_Delay(10);
+		HAL_Delay(20);
 		enableSeg(2);
 		printOn7Seg('R');
-		HAL_Delay(10);
+		HAL_Delay(20);
 		enableSeg(3);
 		printOn7Seg('E');
-		HAL_Delay(10);
+		HAL_Delay(20);
 	}
   /* USER CODE END TIM2_IRQn 1 */
 }
