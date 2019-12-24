@@ -47,7 +47,7 @@ int isTempRecorded = 0;
 int temp = 0, light = 0;
 int LEDEnabled = 0;
 int LDRorVOL = 0; //0 = LDR. 1 = VOLUME
-
+extern TIM_HandleTypeDef htim1;
 void showModeMenu(){
 	clear();
 	setCursor(1, 1);
@@ -327,7 +327,13 @@ void EXTI0_IRQHandler(void)
 	}else if(flag == 1 && select == 1){
 		showModeMenu();
 		flag = 2;
-	}else if(flag == 2){
+	}else if(flag == 2 && select == 1){
+		LEDEnabled = 1;
+		LDRorVOL = 0;
+		flag = 0;
+	}else if(flag == 2 && select == 2){
+		LEDEnabled = 1;
+		LDRorVOL = 1;
 		flag = 0;
 	}
 	
@@ -350,6 +356,10 @@ void ADC1_2_IRQHandler(void)
 	HAL_ADC_Start_IT(&hadc1);
 	HAL_ADC_Start_IT(&hadc2);	
 	
+	
+	if(LEDEnabled){
+//		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (light * 100) / 255);
+	}
   /* USER CODE END ADC1_2_IRQn 1 */
 }
 
@@ -367,8 +377,7 @@ void TIM2_IRQHandler(void)
 	if(!isOnFire){
 		enableSeg(0);
 		printOn7Seg('S');
-
-		//HAL_Delay(RATE_OF_7_SEG);
+		HAL_Delay(RATE_OF_7_SEG);
 		enableSeg(1);
 		printOn7Seg('A');
 		HAL_Delay(RATE_OF_7_SEG);
@@ -447,8 +456,7 @@ void TIM4_IRQHandler(void)
 	sprintf(data2, "%d ", light);
 	print(data2);
   /* USER CODE END TIM4_IRQn 1 */
-}
-	}
+}}
 
 /**
 * @brief This function handles USART2 global interrupt / USART2 wake-up interrupt through EXTI line 26.

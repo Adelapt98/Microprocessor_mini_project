@@ -89,11 +89,26 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* USER CODE BEGIN 0 */
 	int flag = 0;
+	extern int light;
+	extern int LEDEnabled;
+	extern int LDRorVOL;
 	//int select = 0;
 	int isOnFire = 0;
 	unsigned char safe[1];
 	unsigned char buffer[100] = "SAFE";
 	int position = 0;
+	
+	void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+	if(htim->Instance == TIM2 && LEDEnabled && !LDRorVOL) {
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (light * 100) / 255);
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, (light * 100) / 255);
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, (light * 100) / 255);
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, (light * 100) / 255);
+}
+
+}
+
+	
 	void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 		HAL_UART_Receive_IT(&huart2, safe, sizeof(safe));
 		HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_8);
@@ -148,7 +163,6 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 			
 			}
 		isOnFire = 0;
-		HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_9);	
 		position = 0;
 	}	
 	}
@@ -277,6 +291,10 @@ int main(void)
 	HAL_TIM_Base_Start_IT(&htim4);
 	HAL_ADC_Start_IT(&hadc1);
 	HAL_ADC_Start_IT(&hadc2);
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
   
 	
 	
@@ -568,6 +586,21 @@ static void MX_TIM1_Init(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
+  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
   sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
   sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
   sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
@@ -714,8 +747,8 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, CS_I2C_SPI_Pin|LD4_Pin|LD5_Pin|LD7_Pin 
-                          |LD9_Pin|LD10_Pin|LD8_Pin|LD6_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, CS_I2C_SPI_Pin|LD4_Pin|LD5_Pin|LD9_Pin 
+                          |LD6_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
@@ -733,10 +766,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : CS_I2C_SPI_Pin LD4_Pin LD5_Pin LD7_Pin 
-                           LD9_Pin LD10_Pin LD8_Pin LD6_Pin */
-  GPIO_InitStruct.Pin = CS_I2C_SPI_Pin|LD4_Pin|LD5_Pin|LD7_Pin 
-                          |LD9_Pin|LD10_Pin|LD8_Pin|LD6_Pin;
+  /*Configure GPIO pins : CS_I2C_SPI_Pin LD4_Pin LD5_Pin LD9_Pin 
+                           LD6_Pin */
+  GPIO_InitStruct.Pin = CS_I2C_SPI_Pin|LD4_Pin|LD5_Pin|LD9_Pin 
+                          |LD6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
