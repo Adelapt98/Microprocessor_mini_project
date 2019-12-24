@@ -73,8 +73,6 @@
 #define SPI1_MISOA7_GPIO_Port GPIOA
 #define LD4_Pin GPIO_PIN_8
 #define LD4_GPIO_Port GPIOE
-#define LD3_Pin GPIO_PIN_9
-#define LD3_GPIO_Port GPIOE
 #define LD5_Pin GPIO_PIN_10
 #define LD5_GPIO_Port GPIOE
 #define LD7_Pin GPIO_PIN_11
