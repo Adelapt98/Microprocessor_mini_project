@@ -12,6 +12,8 @@
 "riz_mini_project\stm32f3xx_hal_spi_ex.o"
 "riz_mini_project\stm32f3xx_hal_tim.o"
 "riz_mini_project\stm32f3xx_hal_tim_ex.o"
+"riz_mini_project\stm32f3xx_hal_uart.o"
+"riz_mini_project\stm32f3xx_hal_uart_ex.o"
 "riz_mini_project\stm32f3xx_hal_pcd.o"
 "riz_mini_project\stm32f3xx_hal_pcd_ex.o"
 "riz_mini_project\stm32f3xx_hal.o"
