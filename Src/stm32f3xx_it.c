@@ -42,17 +42,6 @@ extern int select;
 extern int isOnFire;
 int InitTemp;
 int isTempRecorded = 0;
-/* USER CODE END 0 */
-
-/* External variables --------------------------------------------------------*/
-extern ADC_HandleTypeDef hadc1;
-extern ADC_HandleTypeDef hadc2;
-extern TIM_HandleTypeDef htim2;
-extern UART_HandleTypeDef huart2;
-
-/******************************************************************************/
-/*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
-/******************************************************************************/
 
 void enableSeg(int i){
 	switch (i){
@@ -101,7 +90,7 @@ void printOn7Seg(char c){
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, 0);
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, 1);
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, 1);
-			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, 1);
 			break;
 		case 'F':
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
@@ -130,8 +119,28 @@ void printOn7Seg(char c){
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, 0);
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, 0);
 			break;
+		case 'R':
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, 1);
+			break;
 	}
 }
+/* USER CODE END 0 */
+
+/* External variables --------------------------------------------------------*/
+extern ADC_HandleTypeDef hadc1;
+extern ADC_HandleTypeDef hadc2;
+extern TIM_HandleTypeDef htim2;
+extern UART_HandleTypeDef huart2;
+
+/******************************************************************************/
+/*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
+/******************************************************************************/
 
 /**
 * @brief This function handles Non maskable interrupt.

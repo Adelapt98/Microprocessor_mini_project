@@ -90,7 +90,7 @@ static void MX_TIM2_Init(void);
 	void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 		HAL_UART_Receive_IT(&huart2, safe, sizeof(safe));
 		HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_8);
-	unsigned char sent[5] = "safe\n";
+	  unsigned char sent[5] = "safe\n";
 	
 
 	if(safe[0] != 0x0D){
@@ -100,7 +100,7 @@ static void MX_TIM2_Init(void);
 		//position++;
 	}else{
 		//buffer[position += 2] = '\0';
-		for(int i = 0; i <= sizeof(buffer) / sizeof(buffer[0]); i++){
+		for(int i = 0; i < sizeof(buffer) / sizeof(buffer[0]); i++){
 			switch(i){
 				case 0:
 					if(buffer[i] != 'S'){
@@ -660,7 +660,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 1, 0);
