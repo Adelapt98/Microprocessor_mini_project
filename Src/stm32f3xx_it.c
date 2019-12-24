@@ -40,19 +40,9 @@
 extern int flag;
 extern int select;
 extern int isOnFire;
+extern int vOrL;
 int InitTemp;
 int isTempRecorded = 0;
-/* USER CODE END 0 */
-
-/* External variables --------------------------------------------------------*/
-extern ADC_HandleTypeDef hadc1;
-extern ADC_HandleTypeDef hadc2;
-extern TIM_HandleTypeDef htim2;
-extern UART_HandleTypeDef huart2;
-
-/******************************************************************************/
-/*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
-/******************************************************************************/
 
 void enableSeg(int i){
 	switch (i){
@@ -101,7 +91,7 @@ void printOn7Seg(char c){
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, 0);
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, 1);
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, 1);
-			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, 1);
 			break;
 		case 'F':
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
@@ -130,8 +120,38 @@ void printOn7Seg(char c){
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, 0);
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, 0);
 			break;
+		case 'R':
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, 0);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, 1);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, 1);
+			break;
 	}
 }
+void showModeMenu(){
+	clear();
+	setCursor(0, 1);
+	write(4);
+	setCursor(1, 1);	
+	print("1.LDR");
+	setCursor(1, 2);
+	print("2.VOlUME");
+}
+/* USER CODE END 0 */
+
+/* External variables --------------------------------------------------------*/
+extern ADC_HandleTypeDef hadc1;
+extern ADC_HandleTypeDef hadc2;
+extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim3;
+extern UART_HandleTypeDef huart2;
+
+/******************************************************************************/
+/*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
+/******************************************************************************/
 
 /**
 * @brief This function handles Non maskable interrupt.
@@ -299,8 +319,19 @@ void EXTI0_IRQHandler(void)
 		setCursor(1, 2);
 		print("2.ON/OFF/AUTO");
 		//printOn7Seg('S');
+		flag = 1;
 	}
-	flag = !flag;
+	else if(flag == 1){
+		select = 1;
+		flag = 2;
+		showModeMenu();
+	}
+	else if(flag == 2 && select == 1){
+		
+	}
+	else if(flag == 2 && select == 2){
+		
+	}
   /* USER CODE END EXTI0_IRQn 1 */
 }
 
@@ -359,6 +390,12 @@ void ADC1_2_IRQHandler(void)
 	print(data2);
 	
 	}
+	
+	if(!vOrL){ // ldr select shode bashad
+		uint32_t a2 = HAL_ADC_GetValue(&hadc2);
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, a2);
+	}
+	
 	HAL_ADC_Start_IT(&hadc1);
 	HAL_ADC_Start_IT(&hadc2);
   /* USER CODE END ADC1_2_IRQn 1 */
@@ -407,6 +444,20 @@ void TIM2_IRQHandler(void)
 }
 
 /**
+* @brief This function handles TIM3 global interrupt.
+*/
+void TIM3_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM3_IRQn 0 */
+
+  /* USER CODE END TIM3_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim3);
+  /* USER CODE BEGIN TIM3_IRQn 1 */
+
+  /* USER CODE END TIM3_IRQn 1 */
+}
+
+/**
 * @brief This function handles USART2 global interrupt / USART2 wake-up interrupt through EXTI line 26.
 */
 void USART2_IRQHandler(void)
@@ -434,12 +485,20 @@ void EXTI15_10_IRQHandler(void)
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
 	HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_8);
 	if(flag){
-		unsigned char hello[8] = "Hello \n";
-		HAL_UART_Transmit(&huart2, hello, sizeof(unsigned char) * 8, 1000);
-		setCursor(0, 1);
-		print(" ");
-		setCursor(0, 2);
-		write(4);
+		if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14)){
+			select = 2;
+			setCursor(0, 1);
+			print(" ");
+			setCursor(0, 2);
+			write(4);
+		}
+		else{
+			select = 1;
+			setCursor(0, 2);
+			print(" ");
+			setCursor(0, 1);
+			write(4);
+		}
 	}
 	
 	

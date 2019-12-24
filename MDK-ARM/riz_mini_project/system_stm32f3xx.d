@@ -2,7 +2,7 @@ riz_mini_project\system_stm32f3xx.o: ..//Src/system_stm32f3xx.c
 riz_mini_project\system_stm32f3xx.o: ../Drivers/CMSIS/Device/ST/STM32F3xx/Include/stm32f3xx.h
 riz_mini_project\system_stm32f3xx.o: ../Drivers/CMSIS/Device/ST/STM32F3xx/Include/stm32f303xc.h
 riz_mini_project\system_stm32f3xx.o: ../Drivers/CMSIS/Include/core_cm4.h
-riz_mini_project\system_stm32f3xx.o: D:\ARMKeil\ARM\ARMCC\Bin\..\include\stdint.h
+riz_mini_project\system_stm32f3xx.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 riz_mini_project\system_stm32f3xx.o: ../Drivers/CMSIS/Include/core_cmInstr.h
 riz_mini_project\system_stm32f3xx.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
 riz_mini_project\system_stm32f3xx.o: ../Drivers/CMSIS/Include/core_cmFunc.h
@@ -14,7 +14,7 @@ riz_mini_project\system_stm32f3xx.o: ../Inc/main.h
 riz_mini_project\system_stm32f3xx.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_rcc.h
 riz_mini_project\system_stm32f3xx.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_def.h
 riz_mini_project\system_stm32f3xx.o: ../Drivers/CMSIS/Device/ST/STM32F3xx/Include/stm32f3xx.h
-riz_mini_project\system_stm32f3xx.o: D:\ARMKeil\ARM\ARMCC\Bin\..\include\stdio.h
+riz_mini_project\system_stm32f3xx.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 riz_mini_project\system_stm32f3xx.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_rcc_ex.h
 riz_mini_project\system_stm32f3xx.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_gpio.h
 riz_mini_project\system_stm32f3xx.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_gpio_ex.h
