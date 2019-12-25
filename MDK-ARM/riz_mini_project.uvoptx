@@ -152,9 +152,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>361</LineNumber>
+          <LineNumber>500</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134218322</Address>
+          <Address>134218810</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -163,7 +163,23 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>../Src/stm32f3xx_it.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\riz_mini_project\../Src/stm32f3xx_it.c\361</Expression>
+          <Expression>\\riz_mini_project\../Src/stm32f3xx_it.c\500</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>338</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>../Src/stm32f3xx_it.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -206,6 +222,16 @@
           <count>7</count>
           <WinNumber>1</WinNumber>
           <ItemText>LDRorVOL</ItemText>
+        </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Volume</ItemText>
+        </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>select</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

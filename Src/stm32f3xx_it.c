@@ -47,6 +47,7 @@ int isTempRecorded = 0;
 int temp = 0, light = 0;
 int LEDEnabled = 0;
 int LDRorVOL = 0; //0 = LDR. 1 = VOLUME
+int Volume = 0;
 extern TIM_HandleTypeDef htim1;
 void showModeMenu(){
 	clear();
@@ -149,6 +150,8 @@ void printOn7Seg(char c){
 /* External variables --------------------------------------------------------*/
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
+extern ADC_HandleTypeDef hadc3;
+extern ADC_HandleTypeDef hadc4;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim4;
 extern UART_HandleTypeDef huart2;
@@ -455,8 +458,9 @@ void TIM4_IRQHandler(void)
 	char data2[5];
 	sprintf(data2, "%d ", light);
 	print(data2);
+}
   /* USER CODE END TIM4_IRQn 1 */
-}}
+}
 
 /**
 * @brief This function handles USART2 global interrupt / USART2 wake-up interrupt through EXTI line 26.
@@ -491,16 +495,46 @@ void EXTI15_10_IRQHandler(void)
 			print(" ");
 			setCursor(0, 2);
 			write(4);
-			select = 1;
+			select = 2;
 		}else{
 			setCursor(0, 2);
 			print(" ");
 			setCursor(0, 1);
 			write(4);
-			select = 2;
+			select = 1;
 		}
 	}
   /* USER CODE END EXTI15_10_IRQn 1 */
+}
+
+/**
+* @brief This function handles ADC3 global interrupt.
+*/
+void ADC3_IRQHandler(void)
+{
+  /* USER CODE BEGIN ADC3_IRQn 0 */
+  //VOLUME
+  /* USER CODE END ADC3_IRQn 0 */
+  HAL_ADC_IRQHandler(&hadc3);
+  /* USER CODE BEGIN ADC3_IRQn 1 */
+	Volume = HAL_ADC_GetValue(&hadc3);
+		HAL_ADC_Start_IT(&hadc3);	
+
+  /* USER CODE END ADC3_IRQn 1 */
+}
+
+/**
+* @brief This function handles ADC4 interrupt.
+*/
+void ADC4_IRQHandler(void)
+{
+  /* USER CODE BEGIN ADC4_IRQn 0 */
+
+  /* USER CODE END ADC4_IRQn 0 */
+  HAL_ADC_IRQHandler(&hadc4);
+  /* USER CODE BEGIN ADC4_IRQn 1 */
+
+  /* USER CODE END ADC4_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
