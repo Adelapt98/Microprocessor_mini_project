@@ -48,7 +48,9 @@ int temp = 0, light = 0;
 int LEDEnabled = 0;
 int LDRorVOL = 0; //0 = LDR. 1 = VOLUME
 int Volume = 0;
-extern TIM_HandleTypeDef htim1;
+int PIREnable = 0;
+extern int isMoving;
+
 void showModeMenu(){
 	clear();
 	setCursor(1, 1);
@@ -58,6 +60,18 @@ void showModeMenu(){
 	setCursor(1, 2);
 	print("VOLUME");
 }
+
+void showOOAMenu(){
+	clear();
+	setCursor(0, 0);
+	write(5);
+	print("ON");
+	setCursor(1, 1);
+	print("OFF");
+	setCursor(1, 2);
+	print("AUTO");
+}
+
 void enableSeg(int i){
 	switch (i){
 		case 0:
@@ -151,7 +165,6 @@ void printOn7Seg(char c){
 extern ADC_HandleTypeDef hadc1;
 extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc3;
-extern ADC_HandleTypeDef hadc4;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim4;
 extern UART_HandleTypeDef huart2;
@@ -330,13 +343,33 @@ void EXTI0_IRQHandler(void)
 	}else if(flag == 1 && select == 1){
 		showModeMenu();
 		flag = 2;
+	}else if(flag == 1 && select == 2){
+		showOOAMenu();
+		flag = 3;
+		select = 0;
 	}else if(flag == 2 && select == 1){
-		LEDEnabled = 1;
+		//LEDEnabled = 1;
 		LDRorVOL = 0;
 		flag = 0;
 	}else if(flag == 2 && select == 2){
-		LEDEnabled = 1;
+		//LEDEnabled = 1;
 		LDRorVOL = 1;
+		flag = 0;
+		select = 1;
+	}else if(flag == 3 && select == 0){
+		LEDEnabled = 1;
+		select = 1;
+		flag = 0;
+	}else if(flag == 3 && select == 1){
+		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13
+		| GPIO_PIN_14 | GPIO_PIN_15, 0);
+		LEDEnabled = 0;
+		select = 1;
+		flag = 0;
+	}else if(flag == 3 && select == 2){
+		PIREnable = 1;
+		LEDEnabled = 1;
+		select = 1;
 		flag = 0;
 	}
 	
@@ -485,6 +518,7 @@ void EXTI15_10_IRQHandler(void)
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
 	
   /* USER CODE END EXTI15_10_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_12);
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_14);
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_15);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
@@ -496,12 +530,14 @@ void EXTI15_10_IRQHandler(void)
 			setCursor(0, 2);
 			write(4);
 			select = 2;
-		}else{
+		}else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15)){
 			setCursor(0, 2);
 			print(" ");
 			setCursor(0, 1);
 			write(4);
 			select = 1;
+		}else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)){
+			isMoving = 1;
 		}
 	}
   /* USER CODE END EXTI15_10_IRQn 1 */
@@ -521,20 +557,6 @@ void ADC3_IRQHandler(void)
 		HAL_ADC_Start_IT(&hadc3);	
 
   /* USER CODE END ADC3_IRQn 1 */
-}
-
-/**
-* @brief This function handles ADC4 interrupt.
-*/
-void ADC4_IRQHandler(void)
-{
-  /* USER CODE BEGIN ADC4_IRQn 0 */
-
-  /* USER CODE END ADC4_IRQn 0 */
-  HAL_ADC_IRQHandler(&hadc4);
-  /* USER CODE BEGIN ADC4_IRQn 1 */
-
-  /* USER CODE END ADC4_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

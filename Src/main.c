@@ -49,7 +49,6 @@ typedef unsigned char byte;
 ADC_HandleTypeDef hadc1;
 ADC_HandleTypeDef hadc2;
 ADC_HandleTypeDef hadc3;
-ADC_HandleTypeDef hadc4;
 
 I2C_HandleTypeDef hi2c1;
 
@@ -83,7 +82,6 @@ static void MX_TIM4_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_ADC3_Init(void);
-static void MX_ADC4_Init(void);
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
                                 
@@ -99,14 +97,15 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 	extern int LEDEnabled;
 	extern int LDRorVOL;
 	extern int Volume;
+	extern int PIREnable;
 	//int select = 0;
 	int isOnFire = 0;
 	unsigned char safe[1];
 	unsigned char buffer[100] = "SAFE";
 	int position = 0;
-	
+	int isMoving = 0;
 	void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-	if(htim->Instance == TIM2 && LEDEnabled && !LDRorVOL) {
+	if(htim->Instance == TIM2 && LEDEnabled && !LDRorVOL && !PIREnable) {
 		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (light * 100) / 255);
 		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, (light * 100) / 255);
 		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, (light * 100) / 255);
@@ -115,7 +114,7 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, (light * 100) / 255);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, (light * 100) / 255);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, (light * 100) / 255);
-	}else if(htim -> Instance == TIM2 && LEDEnabled && LDRorVOL){
+	}else if(htim -> Instance == TIM2 && LEDEnabled && LDRorVOL && !PIREnable){
 		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, Volume);
 		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, Volume);
 		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, Volume);
@@ -124,8 +123,9 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, Volume);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, Volume);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, Volume);
+	}else if(htim -> Instance == TIM2 && LEDEnabled && PIREnable){
+		
 	}
-
 }
 
 	
@@ -230,7 +230,6 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM3_Init();
   MX_ADC3_Init();
-  MX_ADC4_Init();
   /* USER CODE BEGIN 2 */
 	
 	HAL_UART_Receive_IT(&huart2, safe, sizeof(safe));
@@ -547,48 +546,6 @@ static void MX_ADC3_Init(void)
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
   if (HAL_ADC_ConfigChannel(&hadc3, &sConfig) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-}
-
-/* ADC4 init function */
-static void MX_ADC4_Init(void)
-{
-
-  ADC_ChannelConfTypeDef sConfig;
-
-    /**Common config 
-    */
-  hadc4.Instance = ADC4;
-  hadc4.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
-  hadc4.Init.Resolution = ADC_RESOLUTION_8B;
-  hadc4.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc4.Init.ContinuousConvMode = DISABLE;
-  hadc4.Init.DiscontinuousConvMode = DISABLE;
-  hadc4.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc4.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc4.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc4.Init.NbrOfConversion = 1;
-  hadc4.Init.DMAContinuousRequests = DISABLE;
-  hadc4.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-  hadc4.Init.LowPowerAutoWait = DISABLE;
-  hadc4.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
-  if (HAL_ADC_Init(&hadc4) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-    /**Configure Regular Channel 
-    */
-  sConfig.Channel = ADC_CHANNEL_3;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SingleDiff = ADC_SINGLE_ENDED;
-  sConfig.SamplingTime = ADC_SAMPLETIME_601CYCLES_5;
-  sConfig.OffsetNumber = ADC_OFFSET_NONE;
-  sConfig.Offset = 0;
-  if (HAL_ADC_ConfigChannel(&hadc4, &sConfig) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -967,8 +924,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB14 PB15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_14|GPIO_PIN_15;
+  /*Configure GPIO pins : PB12 PB14 PB15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_14|GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
