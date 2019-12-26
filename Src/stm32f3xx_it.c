@@ -343,34 +343,41 @@ void EXTI0_IRQHandler(void)
 	}else if(flag == 1 && select == 1){
 		showModeMenu();
 		flag = 2;
+		HAL_UART_Transmit(&huart2, "1.Mode\n", 8, 1000);
 	}else if(flag == 1 && select == 2){
 		showOOAMenu();
 		flag = 3;
 		select = 0;
+		HAL_UART_Transmit(&huart2, "2.ON/OFF/AUTO\n", 15, 1000);
 	}else if(flag == 2 && select == 1){
 		//LEDEnabled = 1;
 		LDRorVOL = 0;
 		flag = 0;
+		HAL_UART_Transmit(&huart2, "1.LDR\n", 7, 1000);
 	}else if(flag == 2 && select == 2){
 		//LEDEnabled = 1;
 		LDRorVOL = 1;
 		flag = 0;
 		select = 1;
+		HAL_UART_Transmit(&huart2, "2.VOLUME\n", 10, 1000);
 	}else if(flag == 3 && select == 0){
 		LEDEnabled = 1;
 		select = 1;
 		flag = 0;
+		HAL_UART_Transmit(&huart2, "1.ON\n", 6, 1000);
 	}else if(flag == 3 && select == 1){
 		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13
 		| GPIO_PIN_14 | GPIO_PIN_15, 0);
 		LEDEnabled = 0;
 		select = 1;
 		flag = 0;
+		HAL_UART_Transmit(&huart2, "2.OFF\n", 7, 1000);
 	}else if(flag == 3 && select == 2){
 		PIREnable = 1;
 		LEDEnabled = 1;
 		select = 1;
 		flag = 0;
+		HAL_UART_Transmit(&huart2, "3.AUTO\n", 8, 1000);
 	}
 	
 	
@@ -422,6 +429,8 @@ void TIM2_IRQHandler(void)
 		HAL_Delay(RATE_OF_7_SEG);
 		enableSeg(3);
 		printOn7Seg('E');
+		HAL_Delay(RATE_OF_7_SEG);
+		printOn7Seg(' ');
 		HAL_Delay(RATE_OF_7_SEG);
 	}else{
 		enableSeg(0);

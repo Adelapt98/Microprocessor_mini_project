@@ -104,6 +104,7 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 	unsigned char buffer[100] = "SAFE";
 	int position = 0;
 	int isMoving = 0;
+	int timer2P = 0;
 	void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	if(htim->Instance == TIM2 && LEDEnabled && !LDRorVOL && !PIREnable) {
 		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (light * 100) / 255);
@@ -123,8 +124,45 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, Volume);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, Volume);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, Volume);
-	}else if(htim -> Instance == TIM2 && LEDEnabled && PIREnable){
-		
+	}else if(htim -> Instance == TIM2 && LEDEnabled && PIREnable && isMoving){
+		HAL_UART_Transmit(&huart2, "pir", 3, 1000);
+		if(timer2P >= 18 * 8){
+			isMoving = 0;		
+			timer2P = 0;
+			
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 0);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 0);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 0);
+		}
+		else{
+			timer2P ++;
+			if(!LDRorVOL){
+				
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (light * 100) / 255);
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, (light * 100) / 255);
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, (light * 100) / 255);
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, (light * 100) / 255);
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, (light * 100) / 255);
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, (light * 100) / 255);
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, (light * 100) / 255);
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, (light * 100) / 255);
+			}
+			else{
+				__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, Volume);
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, Volume);
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, Volume);
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, Volume);
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, Volume);
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, Volume);
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, Volume);
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, Volume);
+			}
+		}
 	}
 }
 
@@ -890,8 +928,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, CS_I2C_SPI_Pin|LD4_Pin|LD5_Pin|LD9_Pin 
-                          |LD6_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(CS_I2C_SPI_GPIO_Port, CS_I2C_SPI_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
@@ -909,20 +946,24 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : CS_I2C_SPI_Pin LD4_Pin LD5_Pin LD9_Pin 
-                           LD6_Pin */
-  GPIO_InitStruct.Pin = CS_I2C_SPI_Pin|LD4_Pin|LD5_Pin|LD9_Pin 
-                          |LD6_Pin;
+  /*Configure GPIO pin : CS_I2C_SPI_Pin */
+  GPIO_InitStruct.Pin = CS_I2C_SPI_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+  HAL_GPIO_Init(CS_I2C_SPI_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PA0 */
   GPIO_InitStruct.Pin = GPIO_PIN_0;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PE15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PB12 PB14 PB15 */
   GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_14|GPIO_PIN_15;
